@@ -1,0 +1,204 @@
+import pandas as pd
+
+name=['Admin']
+number=['1234567890']
+
+def create_contact():
+    while 1:
+        nam=input('''for exit press 0 .. OR
+        enter new contact name: ''').capitalize()
+        if nam=='0':
+            return 'Exit'
+        elif nam not in name:
+            while 1:
+                try:
+                    num=int(input('''press 0 for exit... OR
+        enter number:''' ))    
+                    if num==0:
+                        return 'Exit'
+                except ValueError:
+                    print("your numbers digits are not all integer..")
+                else:
+                    num=str(num)
+                    if len(num)==10:
+                        if num not in number:
+                            name.append(nam)
+                            number.append(num)
+                            return "Successfully Created contact"
+                        else:
+                            print("number already saved from another name")
+                    else:
+                        print( "number is invalid...")
+        else:
+            print("name already present")
+            index = name.index(nam)
+            phone_number = number[index]
+            print("Name: {}, Phone Number: {}".format(nam, phone_number))
+            c=input('''press 9 for update number with current name
+            or otherwise press any key : ''')
+            if c=='9':
+                while 1:
+                    try:
+                        numbe=int(input('''press 0 for exit.. OR
+enter updated number : '''))
+                        if numbe==0:
+                            return 'Exit'
+                    except ValueError:
+                        print("digits are not in integer...")
+                    else:
+                        if numbe not in number:
+                            numbe=str(numbe)
+                            if len(numbe)==10:
+                                number[name.index(nam)]= numbe
+                                return 'successful updated'
+                            else:
+                                print("number is invalid")
+                        else:
+                            print('Entered number already present. ')
+
+            
+    return "Invalid details"
+
+# create_contact()
+
+# Search
+
+def search():
+    while 1:
+        search_term = input('''    for exit press 0.. OR
+        Enter name or number : ''' ).capitalize()
+        if search_term=='0':
+            return 'EXIT'
+        print("Search result:")
+        if search_term in name or search_term in number:
+            if search_term in name:
+                index = name.index(search_term)
+                phone_number = number[index]
+                print("Name: {}, Phone Number: {}".format(search_term, phone_number))
+                return search_term
+            else:
+                index = number.index(search_term)
+                phone_number = number[index]
+                print("Name: {}, Phone Number: {}".format(name[number.index(search_term)], phone_number))
+                return search_term
+
+        else:
+            print("Name or Number Not Found")
+    return 'INVALID SEARCH'
+# search()
+
+# Delete
+
+def delete():
+    zz=search()
+    if zz in name:
+        st=name.index(zz)
+    elif zz=='EXIT':
+        return 'EXIT'
+    else:
+        st=number.index(zz)
+
+    name.pop(st)
+    number.pop(st)
+    show.drop(st,inplace=True)
+
+    return "Delete Successfully"
+
+# delete()
+
+def update():
+    l=3
+    while l:
+        choice=input('''press 1 for update name: 
+        press 2 for update number: 
+        press 0 for exit''')
+        
+        i,j=3,3
+        if choice=='1':
+            while l:
+                nn=input("enter name: ").capitalize()
+                if nn=='0':
+                    return 'EXIT'
+                if nn in name:
+                    ind=name.index(nn)
+                    a=input("enter updated name: ").capitalize()
+                    if a not in name:
+                        name[ind]=a
+                        return " Successfully updated"
+                    else:
+                        print("name already exists or for exit press 0")
+                        l-=1
+                else:
+                    print("enter valid name. or Press 0 for exit")
+                    l-=1
+        elif choice=='0':
+            return 'Exit'
+        elif choice=='2':
+            while l:
+                try :
+                    numb=int(input("enter number which you have to update: "))
+                except ValueError:
+                    print("your numbers digits are not all integer..")
+                else:
+                    numb=str(numb)
+                    if numb=='0':
+                        return 'EXIT'
+                    if numb in number :
+                        ind=number.index(numb)
+                        try:
+                            b=int(input("enter updated number: "))
+                        except:
+                            print("your numbers digits are not all integer..")
+                        else:
+                            b=str(b)
+                            if len(b)==10:
+                                if b not in number:
+                                    number[ind]=b
+                                    return " Successfully updated"
+                                else:
+                                    print("number already exists or for exit press 0")
+                                    l-=1
+                            else:
+                                print("invalid number")
+                                l-=1
+                    else:
+                        print("enter valid number. or for exit press 0")
+                        l-=1
+        else:
+            print("enter valid input: ")
+            l-=1
+    return 'Invalid inputs'
+
+
+def show_contact():
+    return pd.read_csv('contact_book.csv')
+# show_contact()
+
+
+while 1:
+    create=input("""press 0 for exit
+press 1 for create new contact
+press 2 for search contact
+press 3 for delete contact
+press 4 for update contact list
+press 5 for show contact list : """)
+        
+    a=pd.Series(name,name="Name")
+    b=pd.Series(number,name='Number')
+    show=pd.concat([a,b],axis=1)
+    try:   show.read_csv("contact_book.csv",index=False)
+    except:show.to_csv("contact_book.csv",index=False)
+    print("--------------------------------------------------------")    
+    if create=="1":  print(create_contact())
+    elif create=='2':search()
+    elif create=='3':print(delete())
+    elif create=='4':print(update())
+    elif create=='5':
+        print(show_contact())
+    elif create=='0':
+        print("Thank You for choosing our Contact book")
+        print("--------------------------------------------------------")        
+        break
+    else:
+        print("enter valid input")
+        

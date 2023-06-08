@@ -1,204 +1,262 @@
-import pandas as pd
+d={'admin':'Qwerty123'}
+que=[]
+a=[]
 
-name=['Admin']
-number=['1234567890']
 
-def create_contact():
-    while 1:
-        nam=input('''for exit press 0 .. OR
-        enter new contact name: ''').capitalize()
-        if nam=='0':
-            return 'Exit'
-        elif nam not in name:
-            while 1:
-                try:
-                    num=int(input('''press 0 for exit... OR
-        enter number:''' ))    
-                    if num==0:
-                        return 'Exit'
-                except ValueError:
-                    print("your numbers digits are not all integer..")
-                else:
-                    num=str(num)
-                    if len(num)==10:
-                        if num not in number:
-                            name.append(nam)
-                            number.append(num)
-                            return "Successfully Created contact"
-                        else:
-                            print("number already saved from another name")
-                    else:
-                        print( "number is invalid...")
+leader={'name':['admin'],
+       'points':[0]}
+
+def checkPasswordStrength(passw):
+    strength=0
+    if len(passw)>=8:
+        strength+=1
+    upper=0
+    lower=0
+    for i in passw:
+        if i.islower()==True:
+            lower+=1
+        elif i.isupper()==True:
+            upper+=1
+    if lower>=1 and upper>=1:
+        strength+=1
+
+    for i in range(len(passw)):
+        ch=passw[i]
+        if  ch.isdigit()==True :
+            strength+=1
+    for r in range(0,len(passw)):
+        sp=passw[r]
+        if (passw[r].isalpha()):
+            continue
+        elif (passw[r].isdigit()):
+            continue
         else:
-            print("name already present")
-            index = name.index(nam)
-            phone_number = number[index]
-            print("Name: {}, Phone Number: {}".format(nam, phone_number))
-            c=input('''press 9 for update number with current name
-            or otherwise press any key : ''')
-            if c=='9':
-                while 1:
-                    try:
-                        numbe=int(input('''press 0 for exit.. OR
-enter updated number : '''))
-                        if numbe==0:
-                            return 'Exit'
-                    except ValueError:
-                        print("digits are not in integer...")
+            strength+=1
+    if strength>=4:
+        print("password is strong")
+        return True
+    else:
+        print('''password is weak''')
+        print('''enter details and password again.....''')
+        return False
+
+def signUp():
+    while 1:
+        userUp=input("enter a new username: ").lower()
+        print("-----------------------------------------------------------------------")
+        if userUp=='0':
+            return 'Failed'
+        if userUp not in d:
+            passUp=input("enter a strong password: ")
+            if checkPasswordStrength(passUp):
+                st1=3
+                while st1:
+                    passUp2=input("plz enter your password again: ")
+                    print("-----------------------------------------------------------------------")
+                    if passUp==passUp2:
+                        d.update({userUp:passUp})      #d[userUp]=passUp
+                        print("for recovery Password Question is: ")
+                        q=input("what is your school name: ").lower()
+                        que.append({userUp:q})
+                        print("-----------------------------------------------------------------------")
+                        return 'successful'
+                    
                     else:
-                        if numbe not in number:
-                            numbe=str(numbe)
-                            if len(numbe)==10:
-                                number[name.index(nam)]= numbe
-                                return 'successful updated'
-                            else:
-                                print("number is invalid")
+                        print('password does not match...Please try again...')
+                        st1-=1
+                return 'Failed'
+        else:
+            print('''user name already exists....please try another...
+            press 0 to exit 
+            or ''')
+# signUp()
+
+def signIn():
+    while 1:
+        userIn=input("enter username:").lower()
+        if userIn=='0':
+            return 'Exit Successfully'
+        if userIn in d:
+            sf1=3
+            while sf1:
+                passIn=input("enter password:")
+                print("-----------------------------------------------------------------------")
+                if d[userIn]==passIn:
+                    full()                   
+                    return 'Successfully'
+                else:
+                    print("Password doesn't match.... please try again.....")
+                    rec=input('''if forget password,
+press 1 to recover with security question,
+press 2 for change by OTP:
+press any other key to try enter again password:''')
+                    if  rec=='1':
+                        q=input("what is your school Name")
+                        if q==que[0][userIn]:
+                            print(f"your password is : {d.get(userIn)}")
+                            newpass=input("enter new password: ")
+                            d.update({userIn:newpass})
+                            print("-----------------------------------------------------------------------")
                         else:
-                            print('Entered number already present. ')
+                            print("answer not correct ....Thank you")
+                            print("-----------------------------------------------------------------------")
+                            sf1-=1
+                    elif rec=='2':
+                        import random
+                        c=random.randint(1000,9999)
+                        msg="your OTP is "+str(c)
+                        import os
+                        from twilio.rest import Client
+                        account_sid = "AC549423070ce8ec8cf8219eed8fe1f662"
+                        auth_token = "71fe69d0a8892d9f60c244c5d6c4329c"
+                        client = Client(account_sid, auth_token)
+                        message = client.messages.create(
+                          body="For  change your password , Your OTP is "+str(c),
+                          from_="+14344236673",
+                          to="+917489035993"
+                        )
+                        print(message.sid)
+                        g=int(input("enter OTP: "))
+                        newpass=input("enter new password: ")
+                        d.update({userIn:newpass})
+                        
+                        if g==c:
+                            print("password has been changed")
+                            print("-----------------------------------------------------------------------")
+                        else:
+                            print("invalid OTP.....Thank you")
+                            print("-----------------------------------------------------------------------")
+                    else:
+                        sf1-=1
+                   
+                    
+            return 'Failed'
+        else:
+            print('''Username does not exist..please try again...
+                 press 0 to exit
+                 or''')
+# signIn()
+def main():
+    while(1):
+        mode=input('''choose mode:
+        press 1 to SignUp
+        press 2 to SignIn
+        press 0 to exit:
+        ''')
+        if mode=='1':
+            x=signUp()
+            print('signUp',x)
+            print("-----------------------------------------------------------------------")
+        elif(mode=='2'):
+            z=signIn()
+            print('signIn',z)
+            print("-----------------------------------------------------------------------")
+        elif mode=='0':
+            print('Thank You for using our services...')
+            break
+    #     elif mode=='3':
+    #         import pandas as pd
+    #         a=pd.DataFrame(leader,index=[x for x in range(len(leader['name']))])
+    #         print(a.sort_values('points',ascending=False))
+        else:
+            print('enter a valid input...')
+            print("-----------------------------------------------------------------------")
 
-            
-    return "Invalid details"
+#  leader.update({unerIn: kbc_f.z})
 
-# create_contact()
+# import pandas as pd
+# a=pd.DataFrame(leader,index=[x for x in range(len(leader['name']))])
+# a.sort_values('points',ascending=False)
 
-# Search
+# leader
+# import SignUp_for_library_system as abc
+
+import pandas as pd
+z=pd.read_csv(r'C:\Users\DELL\Downloads\books.csv')
+deleted_series=[]
+
+def ViewBooks():
+    return z
+ViewBooks()
+
+def issue_book():
+    while 1:
+        try:
+            a=input('''press 0 for exit..
+Enter Title of book :''')
+            if a=='0':
+                return 'Exit'
+        #     b=input("Enter author Name: ")
+            A=z.Title       # A=series of Title
+            B=A[A==a].index[0]    # B= index value of searched term(a)
+            aa=z.loc[B]
+            df=pd.DataFrame(aa).T
+            deleted_series.append(z.loc[B])    #   All elements or full row of index B    
+            z.drop(B,inplace=True)
+        except:
+            print('book not found ..OR book already issued for other Student')
+        else:
+            return 'Issued book successfully'
+# issue_book()
 
 def search():
     while 1:
-        search_term = input('''    for exit press 0.. OR
-        Enter name or number : ''' ).capitalize()
-        if search_term=='0':
-            return 'EXIT'
-        print("Search result:")
-        if search_term in name or search_term in number:
-            if search_term in name:
-                index = name.index(search_term)
-                phone_number = number[index]
-                print("Name: {}, Phone Number: {}".format(search_term, phone_number))
-                return search_term
-            else:
-                index = number.index(search_term)
-                phone_number = number[index]
-                print("Name: {}, Phone Number: {}".format(name[number.index(search_term)], phone_number))
-                return search_term
-
+        try:
+            a=input(''' press 0 for exit.
+Enter Title of book : ''')
+            if a=='0':
+                return 'Exit'
+            A=z.Title
+            B=A[A==a].index[0]
+            df=pd.DataFrame(z.loc[B]).T
+            print(df)
+        except:
+            print('Searched book not Found')
         else:
-            print("Name or Number Not Found")
-    return 'INVALID SEARCH'
+            while 1:
+                b=input('''press 1 for issue this book..
+press 2 for exit : ''')
+                if b=='1':
+                    print(issue_book())
+                    return 'Successfully Issued'
+                elif b=='2':
+                    return 'Exit'
+                else:
+                    print("invalid input")
 # search()
 
-# Delete
+def show_issued_book(): 
+    
+    recover=pd.DataFrame(deleted_series)
+    show=pd.concat([recover])
+    show.to_csv('issuesd books.csv')
+    return show
+# show_issued_book()
 
-def delete():
-    zz=search()
-    if zz in name:
-        st=name.index(zz)
-    elif zz=='EXIT':
-        return 'EXIT'
-    else:
-        st=number.index(zz)
-
-    name.pop(st)
-    number.pop(st)
-    show.drop(st,inplace=True)
-
-    return "Delete Successfully"
-
-# delete()
-
-def update():
-    l=3
-    while l:
-        choice=input('''press 1 for update name: 
-        press 2 for update number: 
-        press 0 for exit''')
-        
-        i,j=3,3
+def full(): 
+    while 1:
+        print('-------!! Welcome to my library !! ------- ')
+        choice=input('''press 0 for exit
+    press 1 for view all books, 
+    press 2 for issue book
+    press 3 for show all issued books
+    press 4 for search book and get details:''')
         if choice=='1':
-            while l:
-                nn=input("enter name: ").capitalize()
-                if nn=='0':
-                    return 'EXIT'
-                if nn in name:
-                    ind=name.index(nn)
-                    a=input("enter updated name: ").capitalize()
-                    if a not in name:
-                        name[ind]=a
-                        return " Successfully updated"
-                    else:
-                        print("name already exists or for exit press 0")
-                        l-=1
-                else:
-                    print("enter valid name. or Press 0 for exit")
-                    l-=1
-        elif choice=='0':
-            return 'Exit'
+            print(ViewBooks())
         elif choice=='2':
-            while l:
-                try :
-                    numb=int(input("enter number which you have to update: "))
-                except ValueError:
-                    print("your numbers digits are not all integer..")
-                else:
-                    numb=str(numb)
-                    if numb=='0':
-                        return 'EXIT'
-                    if numb in number :
-                        ind=number.index(numb)
-                        try:
-                            b=int(input("enter updated number: "))
-                        except:
-                            print("your numbers digits are not all integer..")
-                        else:
-                            b=str(b)
-                            if len(b)==10:
-                                if b not in number:
-                                    number[ind]=b
-                                    return " Successfully updated"
-                                else:
-                                    print("number already exists or for exit press 0")
-                                    l-=1
-                            else:
-                                print("invalid number")
-                                l-=1
-                    else:
-                        print("enter valid number. or for exit press 0")
-                        l-=1
+            print(issue_book())
+        elif choice=='3':
+            print(show_issued_book())
+        elif choice=='0':
+            print('--------------------------------------------------------------')
+            print("Thank you , Have a good day")
+            break
+        elif choice=='4':
+            print(search())
         else:
-            print("enter valid input: ")
-            l-=1
-    return 'Invalid inputs'
-
-
-def show_contact():
-    return pd.read_csv('contact_book.csv')
-# show_contact()
-
+            print("enter valid input")
 
 while 1:
-    create=input("""press 0 for exit
-press 1 for create new contact
-press 2 for search contact
-press 3 for delete contact
-press 4 for update contact list
-press 5 for show contact list : """)
-        
-    a=pd.Series(name,name="Name")
-    b=pd.Series(number,name='Number')
-    show=pd.concat([a,b],axis=1)
-    try:   show.read_csv("contact_book.csv",index=False)
-    except:show.to_csv("contact_book.csv",index=False)
-    print("--------------------------------------------------------")    
-    if create=="1":  print(create_contact())
-    elif create=='2':search()
-    elif create=='3':print(delete())
-    elif create=='4':print(update())
-    elif create=='5':
-        print(show_contact())
-    elif create=='0':
-        print("Thank You for choosing our Contact book")
-        print("--------------------------------------------------------")        
-        break
-    else:
-        print("enter valid input")
-        
+    main()
+    break
+
